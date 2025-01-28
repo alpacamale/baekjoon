@@ -7,6 +7,7 @@ import time
 from bs4 import BeautifulSoup
 from config import user_agent
 
+# 잘못된 입력이 있을 시 종료
 if len(sys.argv) != 2:
     print("Usage: ./mk2folder.py [number]")
     sys.exit(1)
@@ -22,10 +23,9 @@ output = soup.select_one("#problem_output > p").text.strip()
 sample_input = soup.select_one("#sample-input-1").text.strip()
 sample_output = soup.select_one("#sample-output-1").text.strip()
 
-markdown = f"""
-# {number}
+markdown = f"""# {number}
 
-[코딩테스트 연습 - $1][1] 로 이동
+[코딩테스트 연습 - {number}][1] 로 이동
 
 ## 문제
 
@@ -52,13 +52,14 @@ markdown = f"""
 ```
 
 ## 풀이
-```
+
+```python
 
 ```
 
-[1]: {url}
-"""
+[1]: {url}"""
 
+# 디렉토리와 python 파일, README 생성
 date = datetime.today().strftime("%Y-%m-%d")
 os.makedirs(date, exist_ok=True)
 os.makedirs(f"{date}/{number}", exist_ok=True)
@@ -68,5 +69,6 @@ with open(f"{date}/{number}/{number}.py", "w") as file:
 with open(f"{date}/{number}/README.md", "w", encoding="utf-8") as file:
     file.write(markdown)
 
-
+# 완료 메시지 출력
 print(f"Folder and structure created at {date}/{number}.")
+print(f"The Python command is: python {date}/{number}/{number}.py")
