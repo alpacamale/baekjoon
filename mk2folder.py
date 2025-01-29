@@ -17,11 +17,11 @@ url = f"https://www.acmicpc.net/problem/{number}"
 headers = {"User-Agent": user_agent}
 response = requests.get(url, headers=headers)
 soup = BeautifulSoup(response.text, "html.parser")
-description = soup.select_one("#problem_description > p").text.strip()
+description = "\n".join(p.text.strip() for p in soup.select("#problem_description > *"))
 input = soup.select_one("#problem_input > p").text.strip()
 output = soup.select_one("#problem_output > p").text.strip()
-sample_input = soup.select_one("#sample-input-1").text.strip()
-sample_output = soup.select_one("#sample-output-1").text.strip()
+sample_input = soup.select_one("#sample-input-1").text.rstrip()
+sample_output = soup.select_one("#sample-output-1").text.rstrip()
 
 markdown = f"""# {number}
 
@@ -63,7 +63,8 @@ markdown = f"""# {number}
 date = datetime.today().strftime("%Y-%m-%d")
 os.makedirs(date, exist_ok=True)
 os.makedirs(f"{date}/{number}", exist_ok=True)
-
+with open(f"{date}/README.md", "a", encoding="utf-8") as file:
+    pass
 with open(f"{date}/{number}/{number}.py", "w") as file:
     pass
 with open(f"{date}/{number}/README.md", "w", encoding="utf-8") as file:
