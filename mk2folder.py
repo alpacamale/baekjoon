@@ -18,10 +18,10 @@ headers = {"User-Agent": user_agent}
 response = requests.get(url, headers=headers)
 soup = BeautifulSoup(response.text, "html.parser")
 description = "\n".join(p.text.strip() for p in soup.select("#problem_description > *"))
-input = soup.select_one("#problem_input > p").text.strip()
-output = soup.select_one("#problem_output > p").text.strip()
-sample_input = soup.select_one("#sample-input-1").text.rstrip()
-sample_output = soup.select_one("#sample-output-1").text.rstrip()
+input = "\n".join(p.text.strip() for p in soup.select("#problem_input > *"))
+output = "\n".join(p.text.strip() for p in soup.select("#problem_output > *"))
+sample_input = soup.select_one("#sample-input-1").text
+sample_output = soup.select_one("#sample-output-1").text
 
 markdown = f"""# {number}
 
