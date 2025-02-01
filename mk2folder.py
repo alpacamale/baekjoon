@@ -3,7 +3,6 @@ import os
 import sys
 from datetime import datetime
 import requests
-import time
 from bs4 import BeautifulSoup
 from config import user_agent
 
