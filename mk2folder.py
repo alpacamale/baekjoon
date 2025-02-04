@@ -21,6 +21,8 @@ input = "\n".join(p.text.strip() for p in soup.select("#problem_input > *"))
 output = "\n".join(p.text.strip() for p in soup.select("#problem_output > *"))
 sample_input = soup.select_one("#sample-input-1").text
 sample_output = soup.select_one("#sample-output-1").text
+# sample_input = ""
+# sample_output = ""
 
 markdown = f"""# {number}
 
