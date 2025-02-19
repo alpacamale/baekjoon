@@ -4,16 +4,15 @@ import sys
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-from config import user_agent
 
 # 잘못된 입력이 있을 시 종료
-if len(sys.argv) != 2:
-    print("Usage: ./mk2folder.py [number]")
+if len(sys.argv) != 2 or not sys.argv[1].isdigit():
+    print("Usage: mk2folder [number]")
     sys.exit(1)
 
 number = sys.argv[1]
 url = f"https://www.acmicpc.net/problem/{number}"
-headers = {"User-Agent": user_agent}
+headers = {"User-Agent": os.getenv("USER_AGENT")}
 response = requests.get(url, headers=headers)
 soup = BeautifulSoup(response.text, "html.parser")
 description = "\n".join(p.text.strip() for p in soup.select("#problem_description > *"))
