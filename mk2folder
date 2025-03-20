@@ -1,13 +1,20 @@
 #!/usr/bin/env python
+
 import os
 import sys
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
-# 잘못된 입력이 있을 시 종료
+load_dotenv()
+
 if len(sys.argv) != 2 or not sys.argv[1].isdigit():
     print("Usage: mk2folder [number]")
+    sys.exit(1)
+
+if not os.getenv("USER_AGENT"):
+    print("[ERROR] Environment variable 'USER_AGENT' is not set.")
     sys.exit(1)
 
 number = sys.argv[1]
@@ -18,10 +25,22 @@ soup = BeautifulSoup(response.text, "html.parser")
 description = "\n".join(p.text.strip() for p in soup.select("#problem_description > *"))
 input = "\n".join(p.text.strip() for p in soup.select("#problem_input > *"))
 output = "\n".join(p.text.strip() for p in soup.select("#problem_output > *"))
-sample_input = soup.select_one("#sample-input-1").text
-sample_output = soup.select_one("#sample-output-1").text
-# sample_input = ""
-# sample_output = ""
+samples = soup.select(".sampledata")
+
+if not (description and input and output and samples):
+    print("[ERROR] Couldn't fetch the data: {number}")
+    sys.exit(1)
+
+sample_strings = []
+
+for index, sample in enumerate(samples):
+    sequence = (index // 2) + 1
+    if index % 2 == 0:
+        sample_strings.append(f"\n## 예제 입력 {sequence}\n\n```\n{sample.text}\n```\n")
+    else:
+        sample_strings.append(f"\n## 예제 출력 {sequence}\n\n```\n{sample.text}\n```\n")
+
+sample_strings = "".join(sample_strings)
 
 markdown = f"""# {number}
 
@@ -38,19 +57,7 @@ markdown = f"""# {number}
 ## 출력
 
 {output}
-
-## 예제 입력
-
-```
-{sample_input}
-```
-
-## 예제 출력
-
-```
-{sample_output}
-```
-
+{sample_strings}
 ## 풀이
 
 ```python
@@ -71,5 +78,6 @@ with open(f"{date}/{number}/README.md", "w", encoding="utf-8") as file:
     file.write(markdown)
 
 # 완료 메시지 출력
-print(f"Folder and structure created at {date}/{number}.")
-print(f"The Python command is: python {date}/{number}/{number}.py")
+print(f"Folder and structure created at {date}/{number}")
+print(f"The python file created at: {date}/{number}/{number}.py")
+print(f"The readme file created at: {date}/{number}/README.md")
